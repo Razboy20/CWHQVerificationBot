@@ -4,9 +4,13 @@ const client = new Discord.Client();
 
 const guildId = 'GUILD-ID';
 const giveRoleName = 'ROLE-NAME';
+const removeRoleName = 'ROLE-NAME';
 
 client.on('ready', () => {
 	console.log('Logged in as ' + client.user.tag + '!');
+	client.user.setActivity('uses of !verify', {
+		type: 'WATCHING'
+	});
 });
 
 function createEmbeds(name, _id) {
@@ -66,9 +70,9 @@ function createEmbeds(name, _id) {
 			embed: {
 				title: '@' + name + ', Please read the instructions below.',
 				description:
-					'To verify that you have a CodeWizardsHQ Account, \n\n1) create a new page on **CodeWizards** with ```<id verificationnum="cw' +
+					'To verify that you have a CodeWizardsHQ Account, \n\n1) go to one of your webpages on your **CodeWizards** editor and paste ```<id verificationnum="cw' +
 					_id +
-					'"/>``` somewhere on it. \n\n2) Afterwards, paste in the website link below in a DM replying to me.',
+					'"/>``` somewhere on the page (preferably in the `<head>` tags if you have one). \n\n2) Afterwards, paste in the website link below in a DM replying to me.',
 				url: undefined,
 				color: 16777011,
 				author: {
@@ -149,9 +153,6 @@ client.on('message', (msg) => {
 		return;
 	}
 
-	// if (msg.author.id == '250809865767878657') {
-	// 	return;
-	// }
 	if (msg.channel.type == 'dm') {
 		msg.channel.send(createEmbeds(msg.author.username).checking).then(function(message) {
 			if (!msg.content.includes('codewizardshq.com')) {
@@ -163,6 +164,13 @@ client.on('message', (msg) => {
 						if (response.data.includes('cw' + msg.author.id)) {
 							let role = client.guilds.get(guildId).roles.find('name', giveRoleName);
 							client.guilds.get(guildId).members.get(msg.author.id).addRole(role).catch(console.error);
+
+							let role2 = client.guilds.get(guildId).roles.find('name', removeRoleName);
+							client.guilds
+								.get(guildId)
+								.members.get(msg.author.id)
+								.removeRole(role2)
+								.catch(console.error);
 							message.edit(createEmbeds(msg.author.username).verified);
 						} else {
 							message.edit(createEmbeds(msg.author.username).declined);
@@ -182,7 +190,7 @@ client.on('message', (msg) => {
 		// msg.delete();
 	}
 	if (msg.channel.type == 'text') {
-		if (msg.channel.name != 'verify') {
+		if (msg.channel.name != 'hall-of-upgrades') {
 			return;
 		}
 
@@ -194,8 +202,11 @@ client.on('message', (msg) => {
 			});
 			msg.author.send(createEmbeds(msg.member.displayName, msg.author.id).toverifydm);
 		}
-		if (msg.content == '!clear') {
-			msg.channel.bulkDelete(20);
+		if (msg.content == '!clear50') {
+			msg.channel.bulkDelete(50).catch(console.error);
+		}
+		if (msg.author.id == '250809865767878657') {
+			return;
 		}
 		setTimeout(() => {
 			msg.delete();
