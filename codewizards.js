@@ -4,7 +4,7 @@ const client = new Discord.Client();
 
 const guildId = 'GUILD-ID';
 const giveRoleName = 'ROLE-NAME';
-const removeRoleName = 'ROLE-NAME';
+const removeRoleName = 'ROLE-NAME ';
 
 client.on('ready', () => {
 	console.log('Logged in as ' + client.user.tag + '!');
