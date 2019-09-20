@@ -1,5 +1,6 @@
 const axios = require('axios');
 const Discord = require('discord.js');
+require('dotenv').config();
 const client = new Discord.Client();
 
 // get addons -- Loader made by tbranyen
@@ -12,9 +13,9 @@ require('fs').readdirSync(normalizedPath).forEach(function(file) {
 	addons.push(require('./addons/' + file));
 });
 
-const guildId = 'GUILD-ID';
-const giveRoleName = 'ROLE-NAME';
-const removeRoleName = 'ROLE-NAME ';
+const guildId = process.env.GUILD_ID;
+const giveRoleName = process.env.GIVE_ROLE_NAME;
+const removeRoleName = process.env.REMOVE_ROLE_NAME;
 
 addons.forEach((addon) => {
 	addon.init(client);
@@ -234,7 +235,7 @@ client.on('message', (msg) => {
 		}, 3000);
 	}
 });
-client.login('SECRET-CLIENT-TOKEN').catch(() => {
+client.login(process.env.SECRET_TOKEN).catch(() => {
 	console.error(
 		'\nERROR: Incorrect login details were provided. Please change the client login token to a valid token.\n'
 	);
