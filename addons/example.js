@@ -19,3 +19,8 @@ exports.message = function(client, msg) {
 		msg.channel.send('Pong!');
 	}
 };
+
+exports.messageEdit = function(client, oldmsg, newmsg) {
+	// ... you can do stuff here on the edit of a message. In this case, I am parsing back into message, so it acts as if a msg was sent.
+	exports.message(client, newmsg);
+};

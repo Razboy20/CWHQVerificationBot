@@ -25,6 +25,10 @@ exports.message = function(client, msg) {
 	}
 };
 
+exports.messageEdit = function(client, oldmsg, newmsg) {
+	exports.message(client, newmsg);
+};
+
 const removeSaying = function(saying, msg) {
 	if (msg.content.toUpperCase().includes(saying)) {
 		msg.delete().catch((err) => {

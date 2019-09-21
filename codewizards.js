@@ -18,7 +18,7 @@ const giveRoleName = process.env.GIVE_ROLE_NAME;
 const removeRoleName = process.env.REMOVE_ROLE_NAME;
 
 addons.forEach((addon) => {
-	addon.init(client);
+	if (addon.init) addon.init(client);
 });
 
 client.on('ready', () => {
@@ -27,7 +27,7 @@ client.on('ready', () => {
 		type: 'WATCHING'
 	});
 	addons.forEach((addon) => {
-		addon.ready(client);
+		if (addon.ready) addon.ready(client);
 	});
 });
 
@@ -167,7 +167,7 @@ function createEmbeds(name, _id) {
 }
 client.on('message', (msg) => {
 	addons.forEach((addon) => {
-		addon.message(client, msg);
+		if (addon.message) addon.message(client, msg);
 	});
 
 	//checking if author is a bot
@@ -235,6 +235,13 @@ client.on('message', (msg) => {
 		}, 3000);
 	}
 });
+
+client.on('messageUpdate', (oldmsg, newmsg) => {
+	addons.forEach((addon) => {
+		if (addon.messageEdit) addon.messageEdit(client, oldmsg, newmsg);
+	});
+});
+
 client.login(process.env.SECRET_TOKEN).catch(() => {
 	console.error(
 		'\nERROR: Incorrect login details were provided. Please change the client login token to a valid token.\n'
