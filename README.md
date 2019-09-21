@@ -10,6 +10,7 @@ To install, first clone the repository, then create a file `.env` in the directo
 GUILD_ID=""
 GIVE_ROLE_NAME=""
 REMOVE_ROLE_NAME=""
+VERIFY_CHANNEL_NAME=""
 SECRET_TOKEN=""
 ```
 
@@ -21,4 +22,4 @@ Currently, the bot has the ability to support addons, and to create one, first t
 
 ### The list of current addons include
 
-- ~~Profanity Filter~~ *(Being Developed)*
+- Profanity Filter

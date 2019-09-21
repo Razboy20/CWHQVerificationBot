@@ -10,7 +10,7 @@ var addons = [];
 var normalizedPath = require('path').join(__dirname, 'addons');
 
 require('fs').readdirSync(normalizedPath).forEach(function(file) {
-	addons.push(require('./addons/' + file));
+	if (file.substr(-3) == '.js') addons.push(require('./addons/' + file));
 });
 
 const guildId = process.env.GUILD_ID;
@@ -212,7 +212,7 @@ client.on('message', (msg) => {
 		// msg.delete();
 	}
 	if (msg.channel.type == 'text') {
-		if (msg.channel.name != 'hall-of-upgrades') {
+		if (msg.channel.name != process.env.VERIFY_CHANNEL_NAME) {
 			return;
 		}
 
