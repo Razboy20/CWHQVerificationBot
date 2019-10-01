@@ -1,10 +1,10 @@
-# Gamer Union Bot
+# CodeWizardsHQ Verification Bot
 
-This bot is developed and maintained for the Gamer Union Discord by Razboy20.  
+This bot is developed and maintained for the CodeWizardsHQ Discord by Razboy20.  
 
 ## To Install
 
-To install, first clone the repository, then create a file `.env` in the directory. Then, then .env file should include the following filled out:
+To install, first clone the repository, then create a file `.env` in the directory. Then, the .env file should include the following filled out:
 
 ```pf
 GUILD_ID=""
@@ -22,4 +22,4 @@ Currently, the bot has the ability to support addons, and to create one, first t
 
 ### The list of current addons include
 
-- none
+- Profanity Filter
