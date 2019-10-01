@@ -1,6 +1,6 @@
-# CodeWizardsHQ Verification Bot
+# Gamer Union Bot
 
-This bot is developed and maintained for the CodeWizardsHQ Discord by Razboy20.  
+This bot is developed and maintained for the Gamer Union Discord by Razboy20.  
 
 ## To Install
 
@@ -22,4 +22,4 @@ Currently, the bot has the ability to support addons, and to create one, first t
 
 ### The list of current addons include
 
-- Profanity Filter
+- none
