@@ -227,9 +227,9 @@ client.on('message', (msg) => {
 		if (msg.content == '!clear50') {
 			msg.channel.bulkDelete(50).catch(console.error);
 		}
-		if (msg.author.id == '250809865767878657') {
-			return;
-		}
+		// if (msg.author.id == '250809865767878657') {
+		// 	return;
+		// }
 		setTimeout(() => {
 			msg.delete();
 		}, 3000);
