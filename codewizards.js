@@ -84,6 +84,27 @@ function createEmbeds(name, _id) {
 				file: undefined
 			}
 		},
+		isverifying: {
+			embed: {
+				title: '@' + name + ' started the verification process.',
+				url: undefined,
+				color: 16777011,
+				author: {
+					name: 'Code Wizard',
+					icon_url:
+						'https://cdn.discordapp.com/avatars/623314619154300988/539bf23444c28b765923eb5b40e9f859.png',
+					url: undefined
+				},
+				timestamp: undefined,
+				fields: [],
+				image: undefined,
+				footer: {
+					text: 'Code Wizard Verification Bot made by Razboy20',
+					icon_url: undefined
+				},
+				file: undefined
+			}
+		},
 		toverifydm: {
 			embed: {
 				title: '@' + name + ', Please read the instructions below.',
@@ -137,6 +158,27 @@ function createEmbeds(name, _id) {
 				file: undefined
 			}
 		},
+		isverified: {
+			embed: {
+				title: '@' + name + ' was verified.',
+				url: undefined,
+				color: 63744,
+				author: {
+					name: 'Code Wizard',
+					icon_url:
+						'https://cdn.discordapp.com/avatars/623314619154300988/539bf23444c28b765923eb5b40e9f859.png',
+					url: undefined
+				},
+				timestamp: undefined,
+				fields: [],
+				image: undefined,
+				footer: {
+					text: 'Code Wizard Verification Bot made by Razboy20',
+					icon_url: undefined
+				},
+				file: undefined
+			}
+		},
 		declined: {
 			embed: {
 				title: '@' + name + ', you are still NOT verified!',
@@ -166,9 +208,40 @@ function createEmbeds(name, _id) {
 	};
 }
 client.on('message', (msg) => {
-	addons.forEach((addon) => {
-		if (addon.message) addon.message(client, msg);
-	});
+	try {
+		addons.forEach((addon) => {
+			if (addon.message) addon.message(client, msg);
+		});
+	} catch (err) {
+		console.log(err);
+	}
+
+	if (msg.channel.type == 'text') {
+		if (msg.channel.name != process.env.VERIFY_CHANNEL_NAME) {
+			return;
+		}
+
+		if (msg.content == '!verify') {
+			msg.channel.send(createEmbeds(msg.member.displayName).toverify).then(function(message) {
+				setTimeout(() => {
+					message.delete();
+				}, 10000);
+			});
+			msg.guild.channels.cache
+				.find((val) => val.name === 'verify-log')
+				.send(createEmbeds(msg.member.displayName).isverifying);
+			msg.author.send(createEmbeds(msg.author.username, msg.author.id).toverifydm);
+		}
+		if (msg.content == '!clear50') {
+			msg.channel.bulkDelete(50).catch(console.error);
+		}
+		// if (msg.author.id == '250809865767878657') {
+		// 	return;
+		// }
+		setTimeout(() => {
+			msg.delete();
+		}, 3000);
+	}
 
 	//checking if author is a bot
 	if (msg.author.bot == true) {
@@ -182,64 +255,59 @@ client.on('message', (msg) => {
 			} else {
 				axios
 					.get(msg.content)
-					.then(function(response) {
-						if (response.data.includes('cw' + msg.author.id)) {
-							let role = client.guilds.get(guildId).roles.find('name', giveRoleName);
-							client.guilds.get(guildId).members.get(msg.author.id).addRole(role).catch(console.error);
-
-							let role2 = client.guilds.get(guildId).roles.find('name', removeRoleName);
-							client.guilds
-								.get(guildId)
-								.members.get(msg.author.id)
-								.removeRole(role2)
-								.catch(console.error);
-							message.edit(createEmbeds(msg.author.username).verified);
-						} else {
-							message.edit(createEmbeds(msg.author.username).declined);
-						}
-					})
 					.catch(function(error) {
 						message.edit(createEmbeds(msg.author.username).declined);
 						console.error('Website does not exist.', error);
 					})
-					.then(function() {
-						// setTimeout(() => {
-						// 	message.delete();
-						// }, 10000);
+					.then(function(response) {
+						console.log(response);
+						if (response.data.includes('cw' + msg.author.id)) {
+							let role = client.guilds.cache
+								.get(guildId)
+								.roles.cache.find((role) => role.name === giveRoleName);
+							client.guilds.cache
+								.get(guildId)
+								.members.cache.get(msg.author.id)
+								.roles.add(role)
+								.catch(console.error);
+
+							let role2 = client.guilds.cache
+								.get(guildId)
+								.roles.cache.find((role) => role.name === removeRoleName);
+							client.guilds
+								.get(guildId)
+								.members.get(msg.author.id)
+								.roles.remove(role2)
+								.catch(console.error);
+							message.edit(createEmbeds(msg.author.username).verified);
+							client.guilds.cache
+								.get(guildId)
+								.channels.cache.find((val) => val.name === 'verify-log')
+								.send(createEmbeds(msg.author.username).isverified);
+						} else {
+							message.edit(createEmbeds(msg.author.username).declined);
+						}
 					});
 			}
 		});
 		// msg.delete();
 	}
-	if (msg.channel.type == 'text') {
-		if (msg.channel.name != process.env.VERIFY_CHANNEL_NAME) {
-			return;
-		}
+});
 
-		if (msg.content == '!verify') {
-			msg.channel.send(createEmbeds(msg.member.displayName).toverify).then(function(message) {
-				setTimeout(() => {
-					message.delete();
-				}, 10000);
-			});
-			msg.author.send(createEmbeds(msg.member.displayName, msg.author.id).toverifydm);
-		}
-		if (msg.content == '!clear50') {
-			msg.channel.bulkDelete(50).catch(console.error);
-		}
-		// if (msg.author.id == '250809865767878657') {
-		// 	return;
-		// }
-		setTimeout(() => {
-			msg.delete();
-		}, 3000);
-	}
+client.on('guildMemberAdd', (member) => {
+	member.send(
+		'Welcome to the **Official CodeWizardsHQ** Discord! To get started, to go the #hall-of-upgrades channel and type in `!verify`.'
+	);
 });
 
 client.on('messageUpdate', (oldmsg, newmsg) => {
-	addons.forEach((addon) => {
-		if (addon.messageEdit) addon.messageEdit(client, oldmsg, newmsg);
-	});
+	try {
+		addons.forEach((addon) => {
+			if (addon.messageEdit) addon.messageEdit(client, oldmsg, newmsg);
+		});
+	} catch (err) {
+		console.log(err);
+	}
 });
 
 client.login(process.env.SECRET_TOKEN).catch(() => {
