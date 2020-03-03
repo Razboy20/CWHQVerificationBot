@@ -27,7 +27,7 @@ exports.message = function(client, msg) {
 							if (msg.author.id === msg.mentions.members.first().id) num--;
 							msg.channel
 								.send(num + ' messages cleared!')
-								.then((messageToDelete) => messageToDelete.delete(3000));
+								.then((messageToDelete) => messageToDelete.delete({ timeout: 3000 }));
 						});
 						if (msg.author.id !== msg.mentions.members.first().id) msg.delete();
 					})
@@ -43,7 +43,7 @@ exports.message = function(client, msg) {
 						msg.channel.bulkDelete(messages, true).then(() => {
 							msg.channel
 								.send(num - 1 + ' messages cleared!')
-								.then((messageToDelete) => messageToDelete.delete(3000));
+								.then((messageToDelete) => messageToDelete.delete({ timeout: 3000 }));
 						});
 					})
 					.catch(console.error);

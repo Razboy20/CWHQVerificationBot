@@ -36,6 +36,8 @@ blockList = [
 ];
 
 exports.message = function(client, msg) {
+	if (msg.author.bot) return;
+	if (msg.channel.name == 'admin-log') return;
 	for (
 		var i = 0;
 		JSON.parse(fs.readFileSync('./addons/resources/profanityFilterWords.json')).phrases.length > i;
@@ -78,9 +80,11 @@ const removeSaying = function(saying, msg) {
 			return;
 		});
 
-		msg.reply('Please do not say that word! Thank you! `@bot`').then((message) => message.delete(6000));
+		msg
+			.reply('Please do not say that word! Thank you! `@bot`')
+			.then((message) => message.delete({ timeout: 6000 }));
 
-		guild.channels.cache
+		msg.guild.channels.cache
 			.find((chan) => chan.name === 'admin-log')
 			.send(`Message: \`${saying}\` - \`${msg.content}\` has been said in ${msg.channel} by ${msg.author}.`);
 
