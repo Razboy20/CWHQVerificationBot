@@ -7,6 +7,8 @@ adminRoles = [ 'Mages', 'Moderator', 'Admin', 'Support troops' ];
 exports.message = function(client, msg) {
 	const command = msg.content.split(' ')[0].slice(prefix.length);
 
+	if (msg.channel.type !== 'text') return;
+
 	if (msg.member.roles.cache.some((val) => val.name.containsAny(adminRoles))) {
 		if (command === 'clear') {
 			let num = parseInt(msg.content.slice(prefix.length + command.length + 1));

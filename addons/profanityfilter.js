@@ -7,15 +7,49 @@ RubixFilterStatus = false;
 var exports = module.exports;
 
 exports.init = function(client) {
+	client.on('presenceUpdate', function(oldPresence, newPresence) {
+		if (newPresence.activities.some((val) => val.hasOwnProperty('type'))) {
+			if (newPresence.activities[0].type === 'CUSTOM_STATUS') {
+				console.log(`User ${newPresence.member.nickname} updated their presence to a custom status.`);
+				const status = newPresence.activities[0].state;
+				let checks = [];
+				for (
+					var i = 0;
+					JSON.parse(fs.readFileSync('./addons/resources/profanityFilterWords.json')).phrases.length > i;
+					i++
+				) {
+					checks.push(
+						checkStatus(
+							JSON.parse(fs.readFileSync('./addons/resources/profanityFilterWords.json')).phrases[
+								i
+							].toUpperCase(),
+							status,
+							newPresence.member
+						)
+					);
+				}
+
+				// if filter detects nothing, run
+				if (!checks.some((a) => a)) {
+					// check if user has prison role, if so, remove
+					if (newPresence.member.roles.cache.some((role) => role.name === 'Prison')) {
+						newPresence.member.roles.remove(
+							newPresence.member.guild.roles.cache.find((role) => role.name === 'Prison')
+						);
+					}
+				}
+			}
+		}
+	});
 	console.log('FILTER INIT');
 };
 
-exports.ready = function(client) {
+exports.ready = function() {
 	console.log('FILTER READY');
 };
 
 String.prototype.containsAny = function(array) {
-	for (i in array) {
+	for (let i in array) {
 		if (this.includes(array[i])) return true;
 	}
 	return false;
@@ -37,7 +71,7 @@ blockList = [
 
 exports.message = function(client, msg) {
 	if (msg.author.bot) return;
-	if (msg.channel.name == 'admin-log') return;
+	if (msg.channel.name === 'admin-log') return;
 	for (
 		var i = 0;
 		JSON.parse(fs.readFileSync('./addons/resources/profanityFilterWords.json')).phrases.length > i;
@@ -75,9 +109,8 @@ exports.messageEdit = function(client, oldmsg, newmsg) {
 
 const removeSaying = function(saying, msg) {
 	if (msg.content.toUpperCase().includes(saying)) {
-		msg.delete().catch((err) => {
+		msg.delete().catch(() => {
 			console.log('--ERROR in erasing filtered text in guild: ' + msg.guild.name);
-			return;
 		});
 
 		msg
@@ -101,4 +134,21 @@ const removeSaying = function(saying, msg) {
 				msg.author.username
 		);
 	}
+};
+
+const checkStatus = function(saying, status, member) {
+	if (status.toUpperCase().includes(saying)) {
+		if (member.roles.cache.some((role) => role.name === 'Prison')) return true;
+		member.roles.add(member.guild.roles.cache.find((role) => role.name === 'Prison'));
+
+		member.guild.channels.cache
+			.find((chan) => chan.name === 'admin-log')
+			.send(`Status: \`${saying}\` - \`${status}\` has been detected in the custom status of ${member}.`);
+
+		console.log(
+			`Status: \`${saying}\` - \`${status}\` has been detected in the custom status of ${member.nickname}.`
+		);
+		return true;
+	}
+	return false;
 };
