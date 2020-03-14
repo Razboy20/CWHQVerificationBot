@@ -8,37 +8,45 @@ var exports = module.exports;
 
 exports.init = function(client) {
 	client.on('presenceUpdate', function(oldPresence, newPresence) {
-		if (newPresence.activities.some((val) => val.hasOwnProperty('type'))) {
-			if (newPresence.activities[0].type === 'CUSTOM_STATUS') {
-				console.log(`User ${newPresence.member.nickname} updated their presence to a custom status.`);
-				const status = newPresence.activities[0].state;
-				let checks = [];
-				for (
-					var i = 0;
-					JSON.parse(fs.readFileSync('./addons/resources/profanityFilterWords.json')).phrases.length > i;
-					i++
-				) {
-					checks.push(
-						checkStatus(
-							JSON.parse(fs.readFileSync('./addons/resources/profanityFilterWords.json')).phrases[
-								i
-							].toUpperCase(),
-							status,
-							newPresence.member
-						)
+		try {
+			if (newPresence.activities.some((val) => val.hasOwnProperty('type'))) {
+				if (newPresence.activities[0].type === 'CUSTOM_STATUS') {
+					console.log(
+						`User ${newPresence.member.nickname
+							? newPresence.member.nickname
+							: newPresence.member.user.username} updated their presence to a custom status.`
 					);
-				}
-
-				// if filter detects nothing, run
-				if (!checks.some((a) => a)) {
-					// check if user has prison role, if so, remove
-					if (newPresence.member.roles.cache.some((role) => role.name === 'Prison')) {
-						newPresence.member.roles.remove(
-							newPresence.member.guild.roles.cache.find((role) => role.name === 'Prison')
+					const status = newPresence.activities[0].state;
+					let checks = [];
+					for (
+						var i = 0;
+						JSON.parse(fs.readFileSync('./addons/resources/profanityFilterWords.json')).phrases.length > i;
+						i++
+					) {
+						checks.push(
+							checkStatus(
+								JSON.parse(fs.readFileSync('./addons/resources/profanityFilterWords.json')).phrases[
+									i
+								].toUpperCase(),
+								status,
+								newPresence.member
+							)
 						);
+					}
+
+					// if filter detects nothing, run
+					if (!checks.some((a) => a)) {
+						// check if user has prison role, if so, remove
+						if (newPresence.member.roles.cache.some((role) => role.name === 'Prison')) {
+							newPresence.member.roles.remove(
+								newPresence.member.guild.roles.cache.find((role) => role.name === 'Prison')
+							);
+						}
 					}
 				}
 			}
+		} catch (error) {
+			console.log(error);
 		}
 	});
 	console.log('FILTER INIT');

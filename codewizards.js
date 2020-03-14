@@ -4,6 +4,7 @@ const fs = require('fs');
 const express = require('express');
 const https = require('https');
 const fetch = require('node-fetch');
+const CryptoJS = require('crypto-js');
 require('dotenv').config();
 const client = new Discord.Client();
 
@@ -35,6 +36,25 @@ app.post('/authuser', async (req, res) => {
 		res.status(406).send('No code specified');
 		return;
 	}
+
+	if (!req.headers.timestamp) {
+		res.status(406).send('No timestamp provided');
+		return;
+	} else if (new Date(new Date()).getTime() - new Date(req.headers.timestamp).getTime() > 60000) {
+		res.status(406).send('Invalid timestamp provided');
+		return;
+	}
+
+	if (
+		req.headers.authorization !==
+		CryptoJS.HmacSHA512(data.code + req.headers.timestamp, process.env.APPLICATION_SECRET).toString(
+			CryptoJS.enc.Base64
+		)
+	) {
+		res.status(406).send('Authorization failed');
+		return;
+	}
+
 	console.log('Verifying user with code ' + data.code);
 	try {
 		data = {
@@ -59,6 +79,11 @@ app.post('/authuser', async (req, res) => {
 			body: form_data,
 			headers: headers
 		});
+		console.log(tokenResponse);
+
+		if (!tokenResponse.ok) {
+			res.status(406).send('Code invalid/expired');
+		}
 		const tokenInfo = await tokenResponse.json();
 
 		if (!tokenInfo.access_token) {

@@ -8,6 +8,17 @@
         {
             "type": "node",
             "request": "launch",
+            "name": "Deploy To Server",
+            "runtimeExecutable": "deploysurvive",
+            // "program": "${workspaceFolder}/codewizards.js",
+            "console": "internalConsole",
+            "internalConsoleOptions": "neverOpen"
+        },
+    
+        
+        {
+            "type": "node",
+            "request": "launch",
             "name": "nodemon",
             "runtimeExecutable": "nodemon",
             "program": "${workspaceFolder}/codewizards.js",
