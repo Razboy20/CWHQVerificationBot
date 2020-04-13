@@ -1,3 +1,8 @@
+
+# **WARNING: THIS PROJECT HAS MOVED**
+
+## **Project has moved to [here](https://github.com/codewizardshq/CWHQDiscordBot).**
+
 # CodeWizardsHQ Verification Bot
 
 This bot is developed and maintained for the CodeWizardsHQ Discord by Razboy20.  
@@ -12,6 +17,11 @@ GIVE_ROLE_NAME=""
 REMOVE_ROLE_NAME=""
 VERIFY_CHANNEL_NAME=""
 SECRET_TOKEN=""
+APPLICATION_SECRET=""
+APPLICATION_ID=""
+
+HTTPS_KEY=""
+HTTPS_CERT=""
 ```
 
 This allows the bot to know what to do.
